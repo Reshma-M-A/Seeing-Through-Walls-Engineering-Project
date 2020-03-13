@@ -3,7 +3,7 @@ This is an honours project.
 
 #Purpose
 
-#Technologies
+#Technologies#
 
 #Setting it Up
 Power up RPi
