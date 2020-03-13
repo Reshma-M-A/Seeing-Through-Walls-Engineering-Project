@@ -1,11 +1,11 @@
 # Seeing-Through-Walls-Engineering-Project
 This is an honours project. 
 
-#Purpose
+# Purpose
 
-#Technologies#
+# Technologies
 
-#Setting it Up
+# Setting it Up
 Power up RPi
 Connect to WiFi ubiquityrobots2222 - robotseverywhere
 Open 3x SSH sessions to ubuntu@10.42.0.1
@@ -30,4 +30,4 @@ Visual diagram of what the sensor sees
 A method of remotely calibrating the sensor.
 
 
-#Outcomes
+# Outcomes
