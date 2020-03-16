@@ -12,16 +12,16 @@ if platform == 'win32':
 	modulePath = join('C:/', 'Program Files', 'Walabot', 'WalabotSDK',
 		'python', 'WalabotAPI.py')
 elif platform.startswith('linux'):
-    modulePath = join('/usr', 'share', 'walabot', 'python', 'WalabotAPI.py')     
+    modulePath = join('/usr', 'share', 'walabot', 'python', 'WalabotAPI.py')
 
-wlbt = load_source('WalabotAPI', modulePath)
-wlbt.Init()
-scancount = 0
+walabot = load_source('WalabotAPI', modulePath)
+walabot.Init()
+
 sock = socket(AF_INET, SOCK_DGRAM)
 sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
 
-def PrintSensorTargets(targets):
+def NetworkSendTargets(targets):
     if targets:
         data = {"targets": []}
         for i, target in enumerate(targets):
@@ -33,70 +33,45 @@ def PrintSensorTargets(targets):
                 "a": target.amplitude
             })
         sock.sendto(json.dumps(data), ('255.255.255.255', 5455))
-            
 
-    system('cls' if platform == 'win32' else 'clear')
-    if targets:
-        for i, target in enumerate(targets):
-            ##print('Target #{}:\nx: {}\ny: {}\nz: {}\namplitude: {}\n'.format(i + 1, target.xPosCm, target.yPosCm, target.zPosCm, target.amplitude))
-            data["targets"].append({
-                "targetID":i,
-                "x": target.xPosCm,
-                "y": target.yPosCm,
-                "z": target.zPosCm,
-                "a": target.amplitude
-            })
-        print(data)
-    else:
-        print('No Target Detected')
-
-def SensorApp():
-    # wlbt.SetArenaR - input parameters
-    minInCm, maxInCm, resInCm = 30, 200, 3
-    # wlbt.SetArenaTheta - input parameters
-    minIndegrees, maxIndegrees, resIndegrees = -15, 15, 5
-    # wlbt.SetArenaPhi - input parameters
-    minPhiInDegrees, maxPhiInDegrees, resPhiInDegrees = -60, 60, 5
-    # Set MTI mode
+def Sensor():
+    ArenaMinimumSize, ArenaMaximumSize, ArenaResolution = 30, 200, 3
+    ArenaMinimumDegrees, ArenaMaximumDegrees, ArenaDegreesResolution = -15, 15, 5
+    ArenaMinimumPhi, ArenaMaximumPhi, ArenaPhiResolution = -60, 60, 5
     mtiMode = False
-    # Initializes walabot lib
-    wlbt.Initialize()
-    # 1) Connect : Establish communication with walabot.
-    wlbt.ConnectAny()
-    # 2) Configure: Set scan profile and arena
-    # Set Profile - to Sensor.
-    wlbt.SetProfile(wlbt.PROF_SENSOR)
-    # Setup arena - specify it by Cartesian coordinates.
-    wlbt.SetArenaR(minInCm, maxInCm, resInCm)
-    # Sets polar range and resolution of arena (parameters in degrees).
-    wlbt.SetArenaTheta(minIndegrees, maxIndegrees, resIndegrees)
-    # Sets azimuth range and resolution of arena.(parameters in degrees).
-    wlbt.SetArenaPhi(minPhiInDegrees, maxPhiInDegrees, resPhiInDegrees)
-    # Moving Target Identification: standard dynamic-imaging filter
-    filterType = wlbt.FILTER_TYPE_MTI if mtiMode else wlbt.FILTER_TYPE_NONE
-    wlbt.SetDynamicImageFilter(filterType)
-    # 3) Start: Start the system in preparation for scanning.
-    wlbt.Start()
-    if not mtiMode: # if MTI mode is not set - start calibrartion
-        # calibrates scanning to ignore or reduce the signals
-        wlbt.StartCalibration()
-        while wlbt.GetStatus()[0] == wlbt.STATUS_CALIBRATING:
-            wlbt.Trigger()
+
+    walabot.Initialize()
+    walabot.ConnectAny()
+
+    walabot.SetProfile(walabot.PROF_SENSOR)
+
+    walabot.SetAreanaR(ArenaMinimumSize, ArenaMaximumSize, ArenaResolution)
+    walabot.SetArenaTheta(ArenaMinimumDegrees, ArenaMaximumDegrees, ArenaDegreesResolution)
+    walabot.SetAreanaPhi(ArenaMinimumPhi, ArenaMaximumPhi, ArenaPhiResolution)
+
+    filterType = walabot.FILTER_TYPE_MTI if mtimode else walabot.FILTER_TYPE_NONE
+    walabot.SetDynamicImageFilter(filterType)
+    
+    walabot.Start()
+    
+    if not mtiMode:
+        input("Calibration Required. Press any key once area is clear...")
+        walabot.StartCalibration()
+        while walabot.GetStatus()[0] == walabot.STATUS_CALIBRATING:
+            print("Calibrating...")
+            walabot.Trigger()
+    
     while True:
-        appStatus, calibrationProcess = wlbt.GetStatus()
-        # 5) Trigger: Scan(sense) according to profile and record signals
-        # to be available for processing and retrieval.
-        wlbt.Trigger()
-        # 6) Get action: retrieve the last completed triggered recording
-        targets = wlbt.GetSensorTargets()
-        rasterImage, _, _, sliceDepth, power = wlbt.GetRawImageSlice()
-        # PrintSensorTargets(targets)
-        PrintSensorTargets(targets)
-    # 7) Stop and Disconnect.
-    wlbt.Stop()
-    wlbt.Disconnect()
-    wlbt.Clean()
-    print('Terminate successfully')
+            appStatus, calibrationProcess = walabot.GetStatus()
+            walabot.Trigger()
+            targets = walabot.GetSensorTargets()
+            rasterImage, _, _, sliceDepth, power = walabot.GetRawImageSlize()
+            NetworkSendTargets(targets)
+    
+    walabot.Stop()
+    walabot.Disconnect()
+    walabot.Clean()
+    print("Terminated Successfully.")
 
 if __name__ == '__main__':
-    SensorApp()
+    Sensor()
