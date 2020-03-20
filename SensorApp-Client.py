@@ -5,26 +5,17 @@ import matplotlib.pyplot as plt
 import matplotlib.animation
 
 sock = socket(AF_INET, SOCK_DGRAM)
-sock.bind(('',1337))
+sock.bind(('',5455))
 
-figure, axis = plt.subplots()
-x, y = [],[]
-scatterPlot = axis.scatterPlotatter(x,y)
-plt.xlim(-100,100)
-plt.ylim(-100,100)
+def getData():
+    ipv4=sock.recvfrom(16384)[0].decode('utf-8')
+    targets = json.loads(ipv4)
+    print(ipv4)
+    return targets
 
-def getData(i):
-    x, y = [],[]
-    multicastData=sock.recvfrom(1024)
-    targets = json.loads(multicastData[0].decode('utf-8'))
-    os.system("CLS")
-    if targets != "":
-        for target in targets["targets"]:
-            print("ID:{0}\n  X:{1}\n  Y:{2}\n  Z:{3}\n  A:{4}".format(target["targetID"],
-                target["x"], target["y"], target["z"], target["a"]))
-            x=target["x"]
-            y=target["y"]
-    scatterPlot.set_offsets([x,y])
+fig, ax = plt.subplots()
 
-ani = matplotlib.animation.FuncAnimation(figure, getData, frames=2, interval=100, repeat=True)
-plt.show()
+while True:
+    ax.cla()
+    ax.imshow(getData()[0])
+    plt.pause(0.1)

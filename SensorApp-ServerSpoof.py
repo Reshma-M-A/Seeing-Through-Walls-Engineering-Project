@@ -6,12 +6,13 @@ from os.path import join
 import json
 from threading import Thread
 import time
+import random
 from socket import *
 
 def NetworkSendTargets(targets):
-    if targets:
-        
-        sock.sendto(json.dumps(data), ('255.255.255.255', 5455))
+    ##if targets:
+    return
+        ##sock.sendto(json.dumps(data), ('255.255.255.255', 5455))
 
 def Sensor():
     ArenaMinimumSize, ArenaMaximumSize, ArenaResolution = 30, 200, 3
@@ -19,7 +20,17 @@ def Sensor():
     ArenaMinimumPhi, ArenaMaximumPhi, ArenaPhiResolution = -60, 60, 5
 
     while True:
-        targets = {}
+        targets = {"targets": []}
+        for i in range(random.randint(1,3)):
+            targets["targets:"].append({
+                "targetID":i,
+                "x":random.random(-10,10),
+                "y":random.random(-10,10),
+                "z":random.random(-10,10),
+                "a":random.random(0,1)
+            })
+        print(targets)
+        NetworkSendTargets(targets)
         
 
 if __name__ == '__main__':
