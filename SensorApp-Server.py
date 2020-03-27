@@ -42,7 +42,7 @@ def SensorApp():
         appStatus, calibrationProcess = wlbt.GetStatus()
         wlbt.Trigger()
         targets = wlbt.GetRawImageSlice()
-        rasterImage, _, _, sliceDepth, power = wlbt.GetRawImageSlice()
+#         rasterImage, _, _, sliceDepth, power = wlbt.GetRawImageSlice()
         sock.sendto(json.dumps(targets),('255.255.255.255',5455))
         print("Sent Data.")
     wlbt.Stop()
