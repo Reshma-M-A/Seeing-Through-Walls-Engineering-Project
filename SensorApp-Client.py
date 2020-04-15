@@ -13,7 +13,7 @@ def show_entry_fields():
     uservars = [e1.get(), e2.get(), e3.get()]
 
 def getData():
-    ipv4=sockrecv.recvfrom(16384)[0].decode('utf-8')
+    ipv4=sockrecv.recvfrom(16384*4)[0].decode('utf-8')
     targets = json.loads(ipv4)
     print(ipv4)
     return targets

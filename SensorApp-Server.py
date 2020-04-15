@@ -22,8 +22,10 @@ sockrecv.bind(('',5454))
 wlbt = load_source('WalabotAPI', modulePath)
 wlbt.Init()
 
-def SensorApp():
-    minInCm, maxInCm, resInCm = 5, 30, 1
+def SensorApp(receivedVariables):
+    minInCm = int(receivedVariables[0])
+    maxInCm = int(receivedVariables[1])
+    resInCm = int(receivedVariables[2])
     minIndegrees, maxIndegrees, resIndegrees = -0, 20, 10
     minPhiInDegrees, maxPhiInDegrees, resPhiInDegrees = -60, 60, 1
     mtiMode = False
@@ -56,6 +58,5 @@ def SensorApp():
     print('Terminate successfully')
 
 if __name__ == '__main__':
-    receivedVariables = sockrecv.recvfrom(16384)[0].decode('utf-8')
-    print(receivedVariables)
-    SensorApp()
+    receivedVariables = json.loads(sockrecv.recvfrom(16384)[0])
+    SensorApp(receivedVariables)
