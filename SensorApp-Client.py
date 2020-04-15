@@ -5,11 +5,12 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.animation
 
+uservars = []
+
 def show_entry_fields():
-    print("minInCM: %s\nMaxInCm: %s\nresInCm: %s", (e1.get(), e2.get(), e3.get()))
-    e1.delete(0, END)
-    e2.delete(0, END)
-    e3.delete(0, END)
+    ##print("minInCM: %s\nMaxInCm: %s\nresInCm: %s", (e1.get(), e2.get(), e3.get()))
+    global uservars
+    uservars = [e1.get(), e2.get(), e3.get()]
 
 def getData():
     ipv4=sockrecv.recvfrom(16384)[0].decode('utf-8')
@@ -41,13 +42,15 @@ e1.grid(row=0, column=1)
 e2.grid(row=1, column=1)
 e3.grid(row=2, column=1)
 
-Button(master, text='Quit', command=master.quit).grid(row=3, column=0, sticky=W, pady=4)
-Button(master, text='Show', command=show_entry_fields).grid(row=3, column=1, sticky=W, pady=4)
+Button(master, text='Send', command=master.quit).grid(row=3, column=0, sticky=W, pady=4)
+Button(master, text='Save', command=show_entry_fields).grid(row=3, column=1, sticky=W, pady=4)
 
 
 if __name__ == '__main__':
     master.mainloop()
-    mainloop()
+    uservarsBytes = json.dumps(uservars).encode()
+
+    socksend.sendto(uservarsBytes,('10.42.0.1',5454))
     fig, ax = plt.subplots()
     while True:
         ax.cla()
