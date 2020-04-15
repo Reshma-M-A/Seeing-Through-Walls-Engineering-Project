@@ -12,17 +12,20 @@ if platform == 'win32':
 elif platform.startswith('linux'):
     modulePath = join('/usr', 'share', 'walabot', 'python', 'WalabotAPI.py') 
 
-sock = socket(AF_INET, SOCK_DGRAM)
-sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
+socksend = socket(AF_INET, SOCK_DGRAM)
+socksend.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+socksend.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
+
+sockrecv = socket(AF_INET, SOCK_DGRAM)
+sockrecv.bind(('',5454))
 
 wlbt = load_source('WalabotAPI', modulePath)
 wlbt.Init()
 
 def SensorApp():
-    minInCm, maxInCm, resInCm = 30, 200, 3
-    minIndegrees, maxIndegrees, resIndegrees = -15, 15, 5
-    minPhiInDegrees, maxPhiInDegrees, resPhiInDegrees = -60, 60, 5
+    minInCm, maxInCm, resInCm = 5, 30, 1
+    minIndegrees, maxIndegrees, resIndegrees = -0, 20, 10
+    minPhiInDegrees, maxPhiInDegrees, resPhiInDegrees = -60, 60, 1
     mtiMode = False
     wlbt.Initialize()
     wlbt.ConnectAny()
@@ -42,8 +45,10 @@ def SensorApp():
         appStatus, calibrationProcess = wlbt.GetStatus()
         wlbt.Trigger()
         targets = wlbt.GetRawImageSlice()
-#         rasterImage, _, _, sliceDepth, power = wlbt.GetRawImageSlice()
-        sock.sendto(json.dumps(targets),('255.255.255.255',5455))
+        #rasterImage, _, _, sliceDepth, power = wlbt.GetRawImageSlice()
+
+        socksend.sendto(json.dumps(targets),('10.42.0.240',5455))
+        
         print("Sent Data.")
     wlbt.Stop()
     wlbt.Disconnect()
@@ -51,4 +56,6 @@ def SensorApp():
     print('Terminate successfully')
 
 if __name__ == '__main__':
+    receivedVariables = sockrecv.recvfrom(16384)[0].decode('utf-8')
+    print(receivedVariables)
     SensorApp()
