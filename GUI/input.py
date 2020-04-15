@@ -1,9 +1,10 @@
 from Tkinter import *
 
 def show_entry_fields():
-    print("minInCM: %s\nMaxInCm: %s" % (e1.get(), e2.get()))
+    print("minInCM: %s\nMaxInCm: %s\nresInCm: %s", (e1.get(), e2.get(), e3.get()))
     e1.delete(0, END)
     e2.delete(0, END)
+    e3.delete(0, END)
 
 master = Tk()
 Label(master, text="minInCm").grid(row=0)
