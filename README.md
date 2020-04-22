@@ -2,7 +2,9 @@
 This is an honours project. 
 
 # Purpose
+This project will develop an innovative solution for first responders  to  plan  their  evacuation  assistance  at  the scene  of  an  emergency,  e.g.,  fire  and  earthquakes. Knowingthe distribution of people inside buildings can help first respondersin defining their evacuation plan. 
 
+The  basic  idea  of  this  project  is utilisingthe  recent technology   improvements   of   wireless   sensing   that allows for tracking people through walls and occlusions. The team will also explore the use of robots and drones fordefining the best evacuation path.
 # Technologies
 
 # Setting it Up
