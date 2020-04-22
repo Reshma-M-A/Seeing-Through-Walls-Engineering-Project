@@ -39,5 +39,3 @@ Improvements:
 Visual diagram of what the sensor sees
 A method of remotely calibrating the sensor.
 
-
-# Outcomes
