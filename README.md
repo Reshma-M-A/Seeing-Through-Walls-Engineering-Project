@@ -8,8 +8,11 @@ This is an honours project.
 # Setting it Up
 Power up RPi
 Connect to WiFi ubiquityrobots2222 - robotseverywhere
+
 Open 3x SSH sessions to ubuntu@10.42.0.1
+
 Password: walabotSLAVE
+
 SSH 1 (walabot sensor)
 cd Desktop
 python SensorApp.py
